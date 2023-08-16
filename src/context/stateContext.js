@@ -3,9 +3,22 @@ import { createContext, useEffect, useRef, useState } from "react";
 export const State = createContext();
 
 export default function StateContext({ children }) {
-  const [name, setName] = useState("nam1");
+  // Date object
+const date = new Date();
+
+let currentDay= String(date.getDate()).padStart(2, '0');
+
+let currentMonth = String(date.getMonth()+1).padStart(2,"0");
+
+let currentYear = date.getFullYear();
+
+// we will display the date as DD-MM-YYYY 
+
+let currentDate = `${currentDay}/${currentMonth}/${currentYear}`;
+
+  const [name, setName] = useState("");
   const [address, setAddress] = useState("");
-  const [payrollDate,setPayrollDate] = useState();
+  const [payrollDate,setPayrollDate] = useState(currentDate);
   const [transportAllowance,setTransportAllowance] = useState(0);
   const [livingAllowance,setLivingAllowance] = useState(0);
   const [dueDate,setDueDate] = useState();
@@ -41,7 +54,8 @@ export default function StateContext({ children }) {
 
   useEffect(() => {
     // CalcSum();
-    let totalss = grossSalary+transportAllowance+livingAllowance;
+    let totalss = 0;
+    totalss += (parseInt(grossSalary) + parseInt(transportAllowance) + parseInt(livingAllowance));
     setNetSalary(totalss)
   }, [grossSalary,transportAllowance,livingAllowance]);
 

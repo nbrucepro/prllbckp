@@ -1,30 +1,17 @@
 import {
   mdiAccountMultiple,
   mdiCartOutline,
-  mdiChartPie,
   mdiChartTimelineVariant,
-  mdiGithub,
-  mdiMonitorCellphone,
-  mdiReload,
 } from '@mdi/js'
 import Head from 'next/head'
-import React, { useState } from 'react'
-import type { ReactElement } from 'react'
-import Button from '../components/Button'
+import React from 'react'
 import LayoutAuthenticated from '../layouts/Authenticated'
 import SectionMain from '../components/Section/Main'
 import SectionTitleLineWithButton from '../components/Section/TitleLineWithButton'
 import CardBoxWidget from '../components/CardBox/Widget'
 import { useSampleClients, useSampleTransactions } from '../hooks/sampleData'
 import CardBoxTransaction from '../components/CardBox/Transaction'
-import { Client, Transaction } from '../interfaces'
 import CardBoxClient from '../components/CardBox/Client'
-import SectionBannerStarOnGitHub from '../components/Section/Banner/StarOnGitHub'
-import CardBox from '../components/CardBox'
-import { sampleChartData } from '../components/ChartLineSample/config'
-import ChartLineSample from '../components/ChartLineSample'
-import NotificationBar from '../components/NotificationBar'
-import TableSampleClients from '../components/Table/SampleClients'
 import { getPageTitle } from '../config'
 
 const Dashboard = () => {
@@ -33,30 +20,13 @@ const Dashboard = () => {
 
   const clientsListed = clients.slice(0, 4)
 
-  const [chartData, setChartData] = useState(sampleChartData())
-
-  const fillChartData = (e: React.MouseEvent) => {
-    e.preventDefault()
-
-    setChartData(sampleChartData())
-  }
-
   return (
     <>
       <Head>
         <title>{getPageTitle('Dashboard')}</title>
       </Head>
       <SectionMain>
-        <SectionTitleLineWithButton icon={mdiChartTimelineVariant} title="Overview" main>
-          {/* <Button
-            href="https://github.com/justboil/admin-one-react-tailwind"
-            target="_blank"
-            icon={mdiGithub}
-            label="Star on GitHub"
-            color="contrast"
-            roundedFull
-            small
-          /> */}
+        <SectionTitleLineWithButton icon={mdiChartTimelineVariant} title="Overview" main>  
         </SectionTitleLineWithButton>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 mb-6">
@@ -93,34 +63,23 @@ const Dashboard = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           <div className="flex flex-col justify-between">
-            {transactions.map((transaction: Transaction) => (
+            {transactions.map((transaction) => (
               <CardBoxTransaction key={transaction.id} transaction={transaction} />
             ))}
           </div>
           <div className="flex flex-col justify-between">
-            {clientsListed.map((client: Client) => (
+            {clientsListed.map((client) => (
               <CardBoxClient key={client.id} client={client} />
             ))}
           </div>
         </div>
-
-        {/* <div className="my-6">
-          <SectionBannerStarOnGitHub />
-        </div> */}
-
-        {/* <SectionTitleLineWithButton icon={mdiChartPie} title="Trends overview">
-          <Button icon={mdiReload} color="whiteDark" onClick={fillChartData} />
-        </SectionTitleLineWithButton> */}
-
-        {/* <CardBox className="mb-6">{chartData && <ChartLineSample data={chartData} />}</CardBox> */}
-
         <SectionTitleLineWithButton icon={mdiAccountMultiple} title="Clients" />
       </SectionMain>
     </>
   )
 }
 
-Dashboard.getLayout = function getLayout(page: ReactElement) {
+Dashboard.getLayout = function getLayout(page) {
   return <LayoutAuthenticated>{page}</LayoutAuthenticated>
 }
 

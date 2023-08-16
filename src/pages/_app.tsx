@@ -7,6 +7,7 @@ import Head from 'next/head'
 import { store } from '../stores/store'
 import { Provider } from 'react-redux'
 import StateContext from '../context/stateContext'
+import '../components/table.css'
 import '../css/main.css'
 
 export type NextPageWithLayout<P = Record<string, unknown>, IP = P> = NextPage<P, IP> & {
