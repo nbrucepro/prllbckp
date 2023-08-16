@@ -1,8 +1,6 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import { useRouter } from 'next/router'
 import React, { ReactElement } from 'react'
-import CardBox from '../components/CardBox'
 import LayoutGuest from '../layouts/Guest'
 import SectionMain from '../components/Section/Main'
 import { StyleKey } from '../interfaces'
@@ -17,17 +15,7 @@ const StyleSelect = () => {
 
   dispatch(setDarkMode(false))
 
-  const styles: StyleKey[] = ['white', 'basic']
-
   const router = useRouter()
-
-  const handleStylePick = (e: React.MouseEvent, style: StyleKey) => {
-    e.preventDefault()
-
-    dispatch(setStyle(style))
-
-    router.push('/dashboard')
-  }
 
   return (
     <>
@@ -41,7 +29,9 @@ const StyleSelect = () => {
           </h1>
           <h2 className="text-xl md:text-xl text-center text-white mb-12">
             Your all in one system{' '}
-            <code className="px-1.5 py-0.5 rounded bg-white bg-opacity-20"><Link href="/dashboard">Go to dashboard</Link></code>
+            <code className="px-1.5 py-0.5 rounded bg-white bg-opacity-20">
+              <Link href="/dashboard">Go to dashboard</Link>
+            </code>
           </h2>
         </SectionMain>
       </div>
