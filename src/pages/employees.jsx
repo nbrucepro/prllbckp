@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import LayoutAuthenticated from '../layouts/Authenticated'
 import { getPageTitle } from '../config'
 import ReactToPrint from 'react-to-print'
@@ -13,32 +13,47 @@ import { State } from '../context/stateContext'
 import { Box } from '@mui/material'
 import Header from '../components/Header'
 const EmployeesPage = () => {
-  const {
-    name,
-    setName,
+  let {
+    basicSalary,
+    setBasicSalary,
     grossSalary,
-    setGrossSalary,
+    name,setName,
     payrollDate,
     setPayrollDate,
     transportAllowance,
     livingAllowance,
     setTransportAllowance,
     setLivingAllowance,
+    paye,
+    setPaye,
     componentRef,
   } = useContext(State)
-
-  const customInputComponent= ({
-    field,
-    form:{touched,errors},
-    ...props
-  }) => (
+  const customInputComponent = ({ field, form: { touched, errors }, ...props }) => (
     <div>
       <input type="text" {...field} {...props} />
-      {touched[field.name] &&
-      errors[field.name] && <div className="error">{errors[field.name]}</div>}
+      {touched[field.name] && errors[field.name] && (
+        <div className="error">{errors[field.name]}</div>
+      )}
     </div>
   )
-
+  const handledate = (date) => {
+    const rwandaDateArray = date.split('-')
+    const rwandaDate = []
+    for (let i = rwandaDateArray.length - 1; i >= 0; i--) {
+      rwandaDate.push(rwandaDateArray[i])
+    }
+    setPayrollDate(rwandaDate.join('/'))
+  }
+  useEffect(() => {
+    if (grossSalary <= 60000) {
+      paye = 0
+    } else if (grossSalary > 60000 && grossSalary <= 100000) {
+      paye = (grossSalary * 20) / 100
+    } else if (grossSalary > 100000) {
+      paye = ((((grossSalary - 100000) * 30) /100) + ((100000-60000)*20) /100)
+    }
+    setPaye(paye)
+  }, [grossSalary, transportAllowance, livingAllowance])
   return (
     <>
       <Head>
@@ -49,9 +64,9 @@ const EmployeesPage = () => {
 
         <div className="flex">
           <div className="max-w-6xl py-0 bg-gray-300 ">
-              <h1 className="text-2xl font-semibold m-1">New Employee</h1>
+            <h1 className="text-2xl font-semibold m-1">New Employee</h1>
             <div className="bg-gray-300 rounded-full shadow-lg px-8 py-8">
-              <h1 className='text-lg font-semibold'>Personal Details</h1>
+              <h1 className="text-lg font-semibold">Personal Details</h1>
               <Formik
                 initialValues={{
                   invoice_number: '',
@@ -77,154 +92,162 @@ const EmployeesPage = () => {
                         >
                           firstName
                         </label>
-                        <Field name="firstName" 
-                        placeholder="Last Name"
-                        className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
+                        <Field
+                          name="firstName"
+                          placeholder="Last Name"
+                          className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
+                          onChange={(e)=>{setName(e.target.value)}}
                         />
                       </div>
                       <div>
                         <label
-                        htmlFor="lastName"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                          htmlFor="lastName"
+                          className="block text-sm font-medium text-gray-700 mb-2"
                         >
                           lastName
                         </label>
                         <Field
-                        id="lastName"
-                        name="lastName"
-                        placeholder="Last Name"
-                        className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"                        
+                          id="lastName"
+                          name="lastName"
+                          placeholder="Last Name"
+                          className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
                         />
                       </div>
                       <div>
                         <label
-                        htmlFor="nationalId"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                          htmlFor="nationalId"
+                          className="block text-sm font-medium text-gray-700 mb-2"
                         >
                           National Id
                         </label>
                         <Field
-                        id="nationalId"
-                        name="nationalId"
-                        type="number"
-                        min="1"
-                        placeholder="National Id"
-                        className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"                        
+                          id="nationalId"
+                          name="nationalId"
+                          type="number"
+                          min="1"
+                          placeholder="National Id"
+                          className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
                         />
                       </div>
                       <div>
                         <label
-                        htmlFor="telephone"
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                          htmlFor="telephone"
+                          className="block text-sm font-medium text-gray-700 mb-2"
                         >
                           Telephone
                         </label>
                         <Field
-                        id="telephone"
-                        name="telephone" 
-                        placeholder="Telephone"
-                        className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"                        
+                          id="telephone"
+                          name="telephone"
+                          placeholder="Telephone"
+                          className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
                         />
                       </div>
-                    </div>     
+                    </div>
                   </Form>
                 )}
               </Formik>
-              <div className='py-8'>
-                    <h1 className='text-lg font-semibold'>Payroll Details</h1> 
-                    <Formik
-                initialValues={{
-                  invoice_number: '',
-                  invoice_date: '',
-                  client_name: '',
-                  client_email: '',
-                  description: '',
-                  amount: '',
-                  currency: 'USD', // Set the default currency value
-                }}
-                onSubmit={(values) => {
-                  // Handle form submission here
-                  console.log(values)
-                }}
-              >
-                {() => (
-                  <Form>
-                    <div className="grid md:grid-cols-2 gap-6 grid-cols-1 py-8 px-10">
-                      <div>
-                        <label
-                          htmlFor="grossSalary"
-                          className="block text-sm font-medium text-gray-700 mb-2"
-                        >
-                          Basic salary
-                        </label>{' '}
-                        <Field
-                          id="grossSalary"
-                          type="number"
-                          step="0.01"
-                          name="grossSalary"
-                          className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
-                          value={grossSalary}
-                          onChange={(e) => setGrossSalary(e.target.value)}
-                          required
-                        />
+              <div className="py-8">
+                <h1 className="text-lg font-semibold">Payroll Details</h1>
+                <Formik
+                  initialValues={{
+                    invoice_number: '',
+                    invoice_date: '',
+                    client_name: '',
+                    client_email: '',
+                    description: '',
+                    amount: '',
+                    currency: 'USD', // Set the default currency value
+                  }}
+                  onSubmit={(values) => {
+                    // Handle form submission here
+                    console.log(values)
+                  }}
+                >
+                  {() => (
+                    <Form>
+                      <div className="grid md:grid-cols-2 gap-6 grid-cols-1 py-8 px-10">
+                        <div>
+                          <label
+                            htmlFor="basicSalary"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                          >
+                            Basic salary
+                          </label>{' '}
+                          <Field
+                            id="basicSalary"
+                            type="number"
+                            step="0.01"
+                            name="basicSalary"
+                            className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
+                            value={basicSalary}
+                            onChange={(e) => setBasicSalary(e.target.value)}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="transportAllowance"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                          >
+                            Transport Allowance
+                          </label>
+                          <Field
+                            id="transportAllowance"
+                            type="number"
+                            value={transportAllowance}
+                            onChange={(e) => setTransportAllowance(e.target.value)}
+                            name="transportAllowance"
+                            className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="livingAllowance"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                          >
+                            Living Allowance
+                          </label>
+                          <Field
+                            id="living-allowance"
+                            type="number"
+                            value={livingAllowance}
+                            onChange={(e) => setLivingAllowance(e.target.value)}
+                            name="livingallowance"
+                            className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="payroll-date"
+                            className="block text-sm font-medium text-gray-700 mb-2"
+                          >
+                            Payroll Date
+                          </label>
+                          <Field
+                            id="payroll-date"
+                            type="date"
+                            name="payroll_date"
+                            className="border border-gray-300 rounded-md px-7 py-2 focus:outline-none focus:border-indigo-500"
+                            value={payrollDate}
+                            onChange={(e) => handledate(e.target.value)}
+                            required
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <label htmlFor="transportAllowance"
-                        className="block text-sm font-medium text-gray-700 mb-2"
-                        >Transport Allowance</label>
-                        <Field
-                          id="transportAllowance"
-                          type="number"
-                          value={transportAllowance}
-                          onChange={(e) => setTransportAllowance(e.target.value)}
-                          name="transportAllowance"
-                          className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="livingAllowance"
-                        className="block text-sm font-medium text-gray-700 mb-2"
-                        >Living Allowance</label>
-                        <Field
-                          id="living-allowance"
-                          type="number"
-                          value={livingAllowance}
-                          onChange={(e) => setLivingAllowance(e.target.value)}
-                          name="livingallowance"
-                          className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="payroll-date"
-                          className="block text-sm font-medium text-gray-700 mb-2"
-                        >
-                          Payroll Date
-                        </label>
-                        <Field
-                          id="payroll-date"
-                          type="date"
-                          name="payroll_date"
-                          className="border border-gray-300 rounded-md px-7 py-2 focus:outline-none focus:border-indigo-500"
-                          required
-                          value={payrollDate}
-                          onChange={(e) => setPayrollDate(e.target.value)}
-                        />
-                      </div>
-                    </div>     
-                  </Form>
-                )}
-              </Formik>    
-                    <div className="flex justify-center mt-6">
-                      <button
-                        type="submit"
-                        className="bg-indigo-500 text-white rounded-md px-4 py-2 hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600"
-                      >
-                        New Employee
-                      </button>
-                    </div>         
+                    </Form>
+                  )}
+                </Formik>
+                <div className="flex justify-center mt-6">
+                  <button
+                    type="submit"
+                    className="bg-indigo-500 text-white rounded-md px-4 py-2 hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600"
+                  >
+                    New Employee
+                  </button>
+                </div>
               </div>
             </div>
           </div>

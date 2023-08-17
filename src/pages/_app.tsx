@@ -7,6 +7,8 @@ import Head from 'next/head'
 import { store } from '../stores/store'
 import { Provider } from 'react-redux'
 import StateContext from '../context/stateContext'
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 import '../components/table.css'
 import '../css/main.css'
 
@@ -75,6 +77,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
           </Script>
           <StateContext>
           <Component {...pageProps} />
+          <ToastContainer />
           </StateContext>
         </>
       )}

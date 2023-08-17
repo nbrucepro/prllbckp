@@ -5574,7 +5574,7 @@ export const geoFeatures = {
     {
       type: "Feature",
       properties: {
-        name: "Equatorial Guinea",
+        name: "Rwanda",
       },
       geometry: {
         type: "Polygon",

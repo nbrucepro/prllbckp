@@ -22,42 +22,23 @@ let currentDate = `${currentDay}/${currentMonth}/${currentYear}`;
   const [transportAllowance,setTransportAllowance] = useState(0);
   const [livingAllowance,setLivingAllowance] = useState(0);
   const [dueDate,setDueDate] = useState();
-  const [grossSalary,setGrossSalary] = useState(0);
+  const [basicSalary,setBasicSalary] = useState(0);
   const [total, setTotal] = useState(0);
-  const [netSalary,setNetSalary] = useState(0);
+  const [grossSalary,setGrossSalary] = useState(0);
   const [netPay,setNetPay] = useState(0);
-  const [paye,setPaye] = useState(0);
+  let [paye,setPaye] = useState(0);
   const [width] = useState(641);
   const componentRef = useRef();
 
   const handlePrint = () => {
     window.print();
   };
-
-  useEffect(() => {
-    if (window.innerWidth < width) {
-      alert("Place your phone in landscape mode for the best experience");
-    }
-  }, [width]);
-
-  function CalcSum() {
-    let rows = document.querySelectorAll(".grossSalary");
-    let sum = 0;
-
-    for (let i = 0; i < rows.length; i++) {
-      if (rows[i].className === "grossSalary") {
-        sum += isNaN(rows[i].innerHTML) ? 0 : parseInt(rows[i].innerHTML);
-        setTotal(sum);
-      }
-    }
-  }
-
   useEffect(() => {
     // CalcSum();
     let totalss = 0;
-    totalss += (parseInt(grossSalary) + parseInt(transportAllowance) + parseInt(livingAllowance));
-    setNetSalary(totalss)
-  }, [grossSalary,transportAllowance,livingAllowance]);
+    totalss += (parseInt(basicSalary) + parseInt(transportAllowance) + parseInt(livingAllowance));
+    setGrossSalary(totalss)
+  }, [basicSalary,transportAllowance,livingAllowance]);
 
 
 
@@ -66,8 +47,8 @@ let currentDate = `${currentDay}/${currentMonth}/${currentYear}`;
     setName,
     address,
     setAddress,
-    grossSalary,
-    setGrossSalary,
+    basicSalary,
+    setBasicSalary,
     transportAllowance,
     livingAllowance,
     setTransportAllowance,
@@ -76,9 +57,11 @@ let currentDate = `${currentDay}/${currentMonth}/${currentYear}`;
     setPayrollDate,
 
     //calculations
-    netSalary,
+    grossSalary,
+    setGrossSalary,    
     netPay,
     paye,
+    setPaye,
     total,
     setTotal,
     width,
