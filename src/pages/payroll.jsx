@@ -54,7 +54,7 @@ const Payroll = () => {
     },
     {
       field: 'Pension 3% Employee Contribution',
-      headerName: 'Pension 5% Employee Contribution',
+      headerName: 'Pension 3% Employee Contribution',
       minWidth: 260,
     },
     {
@@ -83,14 +83,9 @@ const Payroll = () => {
       minWidth: 180,
     },
     {
-      field: 'Other Deductions',
-      headerName: 'Other Deductions',
-      minWidth: 140,
-    },
-    {
       field: 'NET SALARY',
-      headerName: 'NET SALARY',
-      minWidth: 140,
+      headerName: 'Net Salary Before CBHI',
+      minWidth: 200,
     },
     {
       field: 'Employee 0.5% CBHI contributions',
@@ -104,15 +99,6 @@ const Payroll = () => {
     {
       field: 'NET PAY',
       headerName: 'NET PAY',
-    },
-    {
-      field: 'RSSB Base',
-      headerName: 'RSSB Base',
-    },
-    {
-      field: 'PAYE Taxable Base',
-      headerName: 'PAYE Taxable Base',
-      minWidth: 180,
     },
   ];
 

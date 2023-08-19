@@ -27,6 +27,25 @@ const EmployeesPage = () => {
     paye,
     setPaye,
     componentRef,
+    advances,
+    pension3EmployeeContribution,
+    setPension3EmployeeContribution,
+    pension5EmployerContribution,
+    setPension5EmployerContribution,
+    maternity03EmployeeContribution,
+    setMaternity03EmployeeContribution,
+    maternity03EmployerContribution,
+    setMaternity03EmployerContribution,
+    totalPensionPayable,
+    setTotalPensionPayable,
+    totalMaternityPayable,
+    setTotalMaternityPayable,
+    netSalaryBeforeCBHI,
+    setNetSalaryBeforeCBHI,
+    employee05CBHIContributions,
+    setEmployee05CBHIContributions,
+    setNetPay,
+    netPay,
   } = useContext(State)
   const customInputComponent = ({ field, form: { touched, errors }, ...props }) => (
     <div>
@@ -48,11 +67,43 @@ const EmployeesPage = () => {
     if (grossSalary <= 60000) {
       paye = 0
     } else if (grossSalary > 60000 && grossSalary <= 100000) {
-      paye = (grossSalary * 20) / 100
+      paye = (((grossSalary-60000) * 20) / 100)
     } else if (grossSalary > 100000) {
       paye = ((((grossSalary - 100000) * 30) /100) + ((100000-60000)*20) /100)
     }
-    setPaye(paye)
+    let pensioncalc = grossSalary-transportAllowance;
+    //pension3%EmployeeContribution
+    pension3EmployeeContribution = (pensioncalc * 3)/100
+    //pension5%EmployerContribution 
+    pension5EmployerContribution= (pensioncalc * 5)/100
+    //maternity0.3%EmployeeContribution
+    maternity03EmployeeContribution = (pensioncalc * 0.3)/100
+    //maternity0.3%EmployerContribution 
+    maternity03EmployerContribution = (pensioncalc * 0.3)/100
+    //totalPensionPayable
+    totalPensionPayable = pension3EmployeeContribution + pension5EmployerContribution
+    //totalMaternityPayable 
+    totalMaternityPayable = maternity03EmployeeContribution + maternity03EmployerContribution
+    //netSalaryBeforeCBHI = 
+    netSalaryBeforeCBHI = grossSalary-(paye+pension3EmployeeContribution+maternity03EmployeeContribution);
+    //Employee0.5%CBHIContributions 
+    employee05CBHIContributions = (netSalaryBeforeCBHI * 0.5)/100
+    //salaryAfterCBHI = netSalaryBeforeCBHI - employee05CBHIContributions
+
+    //netPay = salaryAfterCBHI-(advances + employee05CBHIContributions)
+    netPay = pensioncalc-(advances + employee05CBHIContributions) 
+     
+    setPaye(paye);
+    setPension3EmployeeContribution(pension3EmployeeContribution)
+    setPension5EmployerContribution(pension5EmployerContribution)
+    setMaternity03EmployeeContribution(maternity03EmployeeContribution)
+    setMaternity03EmployerContribution(maternity03EmployerContribution)
+    setTotalPensionPayable(totalPensionPayable)
+    setTotalMaternityPayable(totalMaternityPayable)
+    setNetSalaryBeforeCBHI(netSalaryBeforeCBHI)
+    setEmployee05CBHIContributions(employee05CBHIContributions)
+    setNetPay(netPay)
+
   }, [grossSalary, transportAllowance, livingAllowance])
   return (
     <>
