@@ -3,7 +3,6 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export const useSampleClients = () => {
   const { data, error } = useSWR('/data-sources/clients.json', fetcher)
-  console.log("data....,",data?.data);
   return {
     clients: data?.data ?? [],
     isLoading: !error && !data,

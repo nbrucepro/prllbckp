@@ -1,23 +1,30 @@
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import React, { useContext, useEffect } from 'react'
-import LayoutAuthenticated from '../layouts/Authenticated'
-import { getPageTitle } from '../config'
+import LayoutAuthenticated from '../../layouts/Authenticated'
+import { getPageTitle } from '../../config'
 import ReactToPrint from 'react-to-print'
-import Headerp from '../components/Payroll/Header'
-import MainDetails from '../components/Payroll/MainDetails'
-import ClientDetails from '../components/Payroll/ClientDetails'
-import Dates from '../components/Payroll/Dates'
-import Table from '../components/Payroll/Table'
-import { Field, Form, Formik } from 'formik'
-import { State } from '../context/stateContext'
+import Headerp from '../../components/Payroll/Header'
+import MainDetails from '../../components/Payroll/MainDetails'
+import ClientDetails from '../../components/Payroll/ClientDetails'
+import Dates from '../../components/Payroll/Dates'
+import Table from '../../components/Payroll/Table'
+import { ErrorMessage, Field, Form, Formik } from 'formik'
+import { State } from '../../context/stateContext'
 import { Box } from '@mui/material'
-import Header from '../components/Header'
+import Header from '../../components/Header'
+import axios from 'axios'
+
+import { toast } from 'react-toastify'
+
 const EmployeesPage = () => {
+  const router = useRouter()
   let {
     basicSalary,
     setBasicSalary,
     grossSalary,
-    name,setName,
+    name,
+    setName,
     payrollDate,
     setPayrollDate,
     transportAllowance,
@@ -67,33 +74,34 @@ const EmployeesPage = () => {
     if (grossSalary <= 60000) {
       paye = 0
     } else if (grossSalary > 60000 && grossSalary <= 100000) {
-      paye = (((grossSalary-60000) * 20) / 100)
+      paye = ((grossSalary - 60000) * 20) / 100
     } else if (grossSalary > 100000) {
-      paye = ((((grossSalary - 100000) * 30) /100) + ((100000-60000)*20) /100)
+      paye = ((grossSalary - 100000) * 30) / 100 + ((100000 - 60000) * 20) / 100
     }
-    let pensioncalc = grossSalary-transportAllowance;
+    let pensioncalc = grossSalary - transportAllowance
     //pension3%EmployeeContribution
-    pension3EmployeeContribution = (pensioncalc * 3)/100
-    //pension5%EmployerContribution 
-    pension5EmployerContribution= (pensioncalc * 5)/100
+    pension3EmployeeContribution = (pensioncalc * 3) / 100
+    //pension5%EmployerContribution
+    pension5EmployerContribution = (pensioncalc * 5) / 100
     //maternity0.3%EmployeeContribution
-    maternity03EmployeeContribution = (pensioncalc * 0.3)/100
-    //maternity0.3%EmployerContribution 
-    maternity03EmployerContribution = (pensioncalc * 0.3)/100
+    maternity03EmployeeContribution = (pensioncalc * 0.3) / 100
+    //maternity0.3%EmployerContribution
+    maternity03EmployerContribution = (pensioncalc * 0.3) / 100
     //totalPensionPayable
     totalPensionPayable = pension3EmployeeContribution + pension5EmployerContribution
-    //totalMaternityPayable 
+    //totalMaternityPayable
     totalMaternityPayable = maternity03EmployeeContribution + maternity03EmployerContribution
-    //netSalaryBeforeCBHI = 
-    netSalaryBeforeCBHI = grossSalary-(paye+pension3EmployeeContribution+maternity03EmployeeContribution);
-    //Employee0.5%CBHIContributions 
-    employee05CBHIContributions = (netSalaryBeforeCBHI * 0.5)/100
+    //netSalaryBeforeCBHI =
+    netSalaryBeforeCBHI =
+      grossSalary - (paye + pension3EmployeeContribution + maternity03EmployeeContribution)
+    //Employee0.5%CBHIContributions
+    employee05CBHIContributions = (netSalaryBeforeCBHI * 0.5) / 100
     //salaryAfterCBHI = netSalaryBeforeCBHI - employee05CBHIContributions
 
     //netPay = salaryAfterCBHI-(advances + employee05CBHIContributions)
-    netPay = pensioncalc-(advances + employee05CBHIContributions) 
-     
-    setPaye(paye);
+    netPay = pensioncalc - (advances + employee05CBHIContributions)
+
+    setPaye(paye)
     setPension3EmployeeContribution(pension3EmployeeContribution)
     setPension5EmployerContribution(pension5EmployerContribution)
     setMaternity03EmployeeContribution(maternity03EmployeeContribution)
@@ -103,12 +111,11 @@ const EmployeesPage = () => {
     setNetSalaryBeforeCBHI(netSalaryBeforeCBHI)
     setEmployee05CBHIContributions(employee05CBHIContributions)
     setNetPay(netPay)
-
   }, [grossSalary, transportAllowance, livingAllowance])
   return (
     <>
       <Head>
-        <title>{getPageTitle('Employees')}</title>
+        <title>{getPageTitle('New Employee')}</title>
       </Head>
       <Box m="20px">
         <Header title="Employees" />
@@ -120,54 +127,75 @@ const EmployeesPage = () => {
               <h1 className="text-lg font-semibold">Personal Details</h1>
               <Formik
                 initialValues={{
-                  invoice_number: '',
-                  invoice_date: '',
-                  client_name: '',
-                  client_email: '',
-                  description: '',
-                  amount: '',
-                  currency: 'USD', // Set the default currency value
+                  familyName: '',
+                  nationalId: '',
+                  telephone: '',
+                  basicSalary: '0',
+                  transportAllowance: '0',
+                  livingAllowance: '0', // Set the default currency value
                 }}
-                onSubmit={(values) => {
+                onSubmit={({ familyName, nationalId, telephone }) => {
                   // Handle form submission here
-                  console.log(values)
+                  axios
+                    .post('http://localhost:5000/api/v1/employee', {
+                      firstName: name,
+                      familyName,
+                      nationalId,
+                      telephone,
+                    })
+                    .then((response) => {
+                      toast('Employee added Successfully', {
+                        hideProgressBar: true,
+                        autoClose: 2000,
+                        type: 'success',
+                      })
+                      router.push('/employees/employees')
+                    })
+                    .catch((error) => {
+                      console.log(error)
+                    })
                 }}
               >
                 {() => (
                   <Form>
-                    <div className="grid md:grid-cols-2 gap-6 grid-cols-1 py-8 px-10">
+                    <div className="grid md:grid-cols-2 gap-6 grid-cols-1 sm:py-8 sm:px-10 py-1 px-1">
                       <div>
                         <label
                           htmlFor="firstName"
                           className="block text-sm font-medium text-gray-700 mb-2"
                         >
-                          firstName
+                          First Name
                         </label>
                         <Field
+                          id="firstName"
                           name="firstName"
-                          placeholder="Last Name"
-                          className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
-                          onChange={(e)=>{setName(e.target.value)}}
+                          placeholder="First Name"
+                          className="border sm:w-full w-full border-gray-300 rounded-md sm:px-3 sm:py-2 focus:outline-none focus:border-indigo-500"
+                          onChange={(e) => {
+                            setName(e.target.value)
+                          }}
+                          required
                         />
                       </div>
                       <div>
                         <label
-                          htmlFor="lastName"
-                          className="block text-sm font-medium text-gray-700 mb-2"
+                          htmlFor="familyName"
+                          className="block sm:w-full w-full text-sm font-medium text-gray-700 mb-2"
                         >
-                          lastName
+                          Family Name
                         </label>
                         <Field
-                          id="lastName"
-                          name="lastName"
-                          placeholder="Last Name"
-                          className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
+                          id="familyName"
+                          name="familyName"
+                          placeholder="Family Name"
+                          className="border sm:w-full w-full border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
+                          required
                         />
                       </div>
                       <div>
                         <label
                           htmlFor="nationalId"
-                          className="block text-sm font-medium text-gray-700 mb-2"
+                          className="sm:w-full w-full block text-sm font-medium text-gray-700 mb-2"
                         >
                           National Id
                         </label>
@@ -177,7 +205,8 @@ const EmployeesPage = () => {
                           type="number"
                           min="1"
                           placeholder="National Id"
-                          className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
+                          className="border sm:w-full w-full border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
+                          required
                         />
                       </div>
                       <div>
@@ -191,37 +220,17 @@ const EmployeesPage = () => {
                           id="telephone"
                           name="telephone"
                           placeholder="Telephone"
-                          className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
+                          className="border sm:w-full w-full border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
                         />
                       </div>
                     </div>
-                  </Form>
-                )}
-              </Formik>
-              <div className="py-8">
-                <h1 className="text-lg font-semibold">Payroll Details</h1>
-                <Formik
-                  initialValues={{
-                    invoice_number: '',
-                    invoice_date: '',
-                    client_name: '',
-                    client_email: '',
-                    description: '',
-                    amount: '',
-                    currency: 'USD', // Set the default currency value
-                  }}
-                  onSubmit={(values) => {
-                    // Handle form submission here
-                    console.log(values)
-                  }}
-                >
-                  {() => (
-                    <Form>
-                      <div className="grid md:grid-cols-2 gap-6 grid-cols-1 py-8 px-10">
+                    <div className="py-8">
+                      <h1 className="text-lg font-semibold">Payroll Details</h1>
+                      <div className="grid md:grid-cols-2 gap-6 grid-cols-1 sm:py-8 sm:px-10 py-1 px-1">
                         <div>
                           <label
                             htmlFor="basicSalary"
-                            className="block text-sm font-medium text-gray-700 mb-2"
+                            className="sm:w-full w-full block text-sm font-medium text-gray-700 mb-2"
                           >
                             Basic salary
                           </label>{' '}
@@ -230,10 +239,9 @@ const EmployeesPage = () => {
                             type="number"
                             step="0.01"
                             name="basicSalary"
-                            className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
+                            className="sm:w-full w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
                             value={basicSalary}
                             onChange={(e) => setBasicSalary(e.target.value)}
-                            required
                           />
                         </div>
                         <div>
@@ -249,8 +257,7 @@ const EmployeesPage = () => {
                             value={transportAllowance}
                             onChange={(e) => setTransportAllowance(e.target.value)}
                             name="transportAllowance"
-                            className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
-                            required
+                            className="sm:w-full w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
                           />
                         </div>
                         <div>
@@ -266,8 +273,7 @@ const EmployeesPage = () => {
                             value={livingAllowance}
                             onChange={(e) => setLivingAllowance(e.target.value)}
                             name="livingallowance"
-                            className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
-                            required
+                            className="sm:w-full w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
                           />
                         </div>
                         <div>
@@ -281,25 +287,24 @@ const EmployeesPage = () => {
                             id="payroll-date"
                             type="date"
                             name="payroll_date"
-                            className="border border-gray-300 rounded-md px-7 py-2 focus:outline-none focus:border-indigo-500"
+                            className="sm:w-full w-full border border-gray-300 rounded-md px-7 py-2 focus:outline-none focus:border-indigo-500"
                             value={payrollDate}
                             onChange={(e) => handledate(e.target.value)}
-                            required
                           />
                         </div>
                       </div>
-                    </Form>
-                  )}
-                </Formik>
-                <div className="flex justify-center mt-6">
-                  <button
-                    type="submit"
-                    className="bg-indigo-500 text-white rounded-md px-4 py-2 hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600"
-                  >
-                    New Employee
-                  </button>
-                </div>
-              </div>
+                    </div>
+                    <div className="flex justify-center mt-4">
+                      <button
+                        type="submit"
+                        className="bg-indigo-500 text-white rounded-md px-4 py-2 hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600"
+                      >
+                        New Employee
+                      </button>
+                    </div>
+                  </Form>
+                )}
+              </Formik>
             </div>
           </div>
           {/* Payroll Preview */}

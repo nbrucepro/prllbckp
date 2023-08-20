@@ -26,9 +26,18 @@ const menuAside: MenuAsideItem[] = [
     label:'Invoice'
   },
   {
-    href: '/employees',
     label: 'Employees',
     icon: mdiTable,
+    menu:[
+      {
+      href:'/employees/employees-create',
+      label:'New Employee'
+    },
+      {
+      href:'/employees/employees',
+      label:'All Employees'
+    }
+  ]
   },
   {
     href:'/payroll',

@@ -21,7 +21,7 @@ table {
   table th, tfoot td {
     /* padding-top: 12px; */
     padding-bottom: 12px;
-    text-align: center;
+    /* text-align: center; */
     background-color: rgb(209 213 219);
     color: #1f1f1f;
   }

@@ -3,7 +3,6 @@ import { State } from "../../context/stateContext";
 
 export default function Dates() {
   const { basicSalary, payrollDate, dueDate,transportAllowance,livingAllowance } = useContext(State);
-  console.log(payrollDate);
   return (
     <>
       <article className="mt-10 mb-14 flex items-end justify-end">

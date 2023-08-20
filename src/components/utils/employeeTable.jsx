@@ -1,10 +1,11 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useTable, useRowSelect } from 'react-table'
-// import MOCK_DATA from '../MOCK_DATA.json'
-import { COLUMNS } from '../utils/columns'
+import { COLUMNS } from './columns'
 import { Checkbox } from '../checkbox'
-import { toast } from 'react-toastify'
-const Test = ({ MOCK_DATA }) => {
+const EmployeeTable = ({ MOCK_DATA }) => {
+  useEffect(() => {
+    console.log(MOCK_DATA)
+  })
   const columns = useMemo(() => COLUMNS, [])
   const data = useMemo(() => MOCK_DATA, [])
 
@@ -30,9 +31,6 @@ const Test = ({ MOCK_DATA }) => {
     )
 
   const firstPageRows = rows.slice(0, 10)
-  const handlePayroll = () => {
-    toast('Payroll Generated', { hideProgressBar: true, autoClose: 2000, type: 'success' })
-  }
 
   return (
     <>
@@ -59,20 +57,7 @@ const Test = ({ MOCK_DATA }) => {
           })}
         </tbody>
       </table>
-      <pre>
-        <div className="flex justify-start mt-6">
-          {/* {selectedFlatRows.length} */}
-          <button
-            type="submit"
-            className="bg-indigo-500 text-white rounded-md px-4 py-2 focus:outline-none focus:bg-indigo-600"
-            disabled={selectedFlatRows.length === 0}
-            onClick={handlePayroll}
-          >
-            Generate Payroll
-          </button>
-        </div>
-      </pre>
     </>
   )
 }
-export default Test
+export default EmployeeTable

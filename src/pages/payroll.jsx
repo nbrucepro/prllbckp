@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Box } from '@mui/material'
 import { DataGrid, GridToolbar } from '@mui/x-data-grid'
 import { tokens } from '../../theme'
@@ -7,8 +7,18 @@ import Header from '../components/Header'
 import { useTheme } from '@mui/material'
 import LayoutAuthenticated from '../layouts/Authenticated'
 import Test from '../components/Payroll/test'
+import axios from 'axios';
 
 const Payroll = () => {  
+  const [data, setData] = useState([])
+  useEffect(() => {
+    axios.get('http://localhost:5000/api/v1/employee').then((response) => {
+      console.log(response.data.employees)
+      setData(response.data.employees)
+    })
+  }, [])
+
+
   const theme = useTheme()
   const colors = tokens(theme.palette.mode)
   const columns = [
@@ -166,7 +176,10 @@ const Payroll = () => {
           />
         </Box>
       ) : (
-     <Test/>      )}
+        <>
+         {data.length !== 0 ? <Test MOCK_DATA={data} /> : <p>Loading...</p>}
+        </>
+     )}
     </Box>
   )
 }

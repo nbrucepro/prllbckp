@@ -23,7 +23,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-, "src/pages/payroll.jsx", "src/pages/dashboard.jsx", "src/pages/employees.jsx"  ],
+, "src/pages/payroll.jsx", "src/pages/dashboard.jsx", "src/pages/employees/employees-create.jsx"  ],
   "exclude": [
     "node_modules"
   ]
