@@ -124,17 +124,11 @@ const EmployeesPage = () => {
                   familyName: '',
                   nationalId: '',
                   telephone: '',
-                  basicSalary: '0',
-                  transportAllowance: '0',
-                  livingAllowance: '0', // Set the default currency value
-                }}
+                   }}
                 onSubmit={({
                   familyName,
                   nationalId,
                   telephone,
-                  basicSalary,
-                  transportAllowance,
-                  livingAllowance,
                 }) => {
                   // Handle form submission here
                   setLoading(true)
