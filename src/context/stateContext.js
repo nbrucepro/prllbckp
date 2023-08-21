@@ -101,6 +101,8 @@ export default function StateContext({ children }) {
     employee05CBHIContributions,
     setEmployee05CBHIContributions,
     setNetPay,
+    advances,
+    setAdvances
   }
 
   return <State.Provider value={context}>{children}</State.Provider>

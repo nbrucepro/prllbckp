@@ -2,35 +2,52 @@ import { useEffect, useState } from 'react'
 import { Box } from '@mui/material'
 import { DataGrid, GridToolbar } from '@mui/x-data-grid'
 import { tokens } from '../../theme'
-import { mockDataContacts } from '../../mockData'
 import Header from '../components/Header'
 import { useTheme } from '@mui/material'
 import LayoutAuthenticated from '../layouts/Authenticated'
 import Test from '../components/Payroll/test'
-import axios from 'axios';
+import axios from 'axios'
 
-const Payroll = () => {  
+const Payroll = () => {
   const [data, setData] = useState([])
+  const [payrollData, setPayrollData] = useState([])
   useEffect(() => {
+    axios
+      .get('http://localhost:5000/api/v1/payroll')
+      .then((response) => {
+        const payrollWithIds = response.data.payrolls.map((payroll, index) => ({
+          ...payroll,
+          id: index + 1,
+          firstName: payroll.employeeId?.firstName,
+          familyName: payroll.employeeId?.familyName,
+        }))
+
+        setPayrollData(payrollWithIds)
+        console.log(payrollWithIds)
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+
     axios.get('http://localhost:5000/api/v1/employee').then((response) => {
-      console.log(response.data.employees)
       setData(response.data.employees)
     })
+    allPayrolls()
   }, [])
-
+  const allPayrolls = () => {}
 
   const theme = useTheme()
   const colors = tokens(theme.palette.mode)
   const columns = [
     { field: 'id', headerName: '#', flex: 0.5 },
-    { field: 'registrarId', headerName: 'First Name' },
+    { field: 'firstName', headerName: 'First Name' },
     {
-      field: 'name',
-      headerName: 'Last Name',
+      field: 'familyName',
+      headerName: 'Family Name',
       cellClassName: 'name-column--cell',
     },
     {
-      field: 'age',
+      field: 'netPay',
       headerName: 'Net Topay',
       type: 'number',
       headerAlign: 'left',
@@ -38,81 +55,80 @@ const Payroll = () => {
       minWidth: 90,
     },
     {
-      field: 'phone',
+      field: 'basicSalary',
       headerName: 'Basic Salary',
       minWidth: 100,
     },
     {
-      field: 'email',
+      field: 'transportAllowance',
       headerName: 'Transport Allowance',
       minWidth: 150,
     },
     {
-      field: 'address',
+      field: 'livingAllowance',
       headerName: 'Living Allowance',
       minWidth: 130,
     },
     {
-      field: 'city',
+      field: 'grossSalary',
       headerName: 'Gross Salary',
       minWidth: 110,
     },
     {
-      field: 'zipCode',
+      field: 'paye',
       headerName: 'PAYE',
       minWidth: 70,
     },
     {
-      field: 'Pension 3% Employee Contribution',
+      field: 'pension3EmployeeContribution',
       headerName: 'Pension 3% Employee Contribution',
       minWidth: 260,
     },
     {
-      field: 'Pension 5% Employer Contribution',
+      field: 'pension5EmployerContribution',
       headerName: 'Pension 5% Employer Contribution',
       minWidth: 250,
     },
     {
-      field: 'Total Pension Payable',
+      field: 'totalPensionPayable',
       headerName: 'Total Pension Payable',
       minWidth: 160,
     },
     {
-      field: 'maternity 0.3% Employee Contribution',
+      field: 'maternity03EmployeeContribution',
       headerName: 'Maternity 0.3% Employee Contribution',
       minWidth: 260,
     },
     {
-      field: 'maternity 0.3% Employer Contribution',
+      field: 'maternity03EmployerContribution',
       headerName: 'Maternity 0.3% Employer Contribution',
       minWidth: 280,
     },
     {
-      field: 'Total Maternity Payable',
+      field: 'totalMaternityPayable',
       headerName: 'Total Maternity Payable',
       minWidth: 180,
     },
     {
-      field: 'NET SALARY',
+      field: 'netSalaryBeforeCBHI',
       headerName: 'Net Salary Before CBHI',
       minWidth: 200,
     },
     {
-      field: 'Employee 0.5% CBHI contributions',
+      field: 'employee05CBHIContributions',
       headerName: 'Employee 0.5% CBHI contributions',
       minWidth: 280,
     },
     {
-      field: 'Advances',
+      field: 'advances',
       headerName: 'Advances',
     },
     {
-      field: 'NET PAY',
+      field: 'netPay',
       headerName: 'NET PAY',
     },
-  ];
+  ]
 
- 
   const [active, setActive] = useState('logs')
   return (
     <Box m="20px">
@@ -169,17 +185,11 @@ const Payroll = () => {
             },
           }}
         >
-          <DataGrid
-            rows={mockDataContacts}
-            columns={columns}
-            components={{ Toolbar: GridToolbar }}
-          />
+          <DataGrid rows={payrollData} columns={columns} components={{ Toolbar: GridToolbar }} />
         </Box>
       ) : (
-        <>
-         {data.length !== 0 ? <Test MOCK_DATA={data} /> : <p>Loading...</p>}
-        </>
-     )}
+        <>{data.length !== 0 ? <Test MOCK_DATA={data} /> : <p>Loading...</p>}</>
+      )}
     </Box>
   )
 }

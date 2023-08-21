@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import {useState} from 'react'
 import { useRouter } from 'next/router'
 import React, { useContext, useEffect } from 'react'
 import LayoutAuthenticated from '../../layouts/Authenticated'
@@ -54,14 +55,7 @@ const EmployeesPage = () => {
     setNetPay,
     netPay,
   } = useContext(State)
-  const customInputComponent = ({ field, form: { touched, errors }, ...props }) => (
-    <div>
-      <input type="text" {...field} {...props} />
-      {touched[field.name] && errors[field.name] && (
-        <div className="error">{errors[field.name]}</div>
-      )}
-    </div>
-  )
+  const [loading, setLoading] = useState(false)
   const handledate = (date) => {
     const rwandaDateArray = date.split('-')
     const rwandaDate = []
@@ -134,8 +128,16 @@ const EmployeesPage = () => {
                   transportAllowance: '0',
                   livingAllowance: '0', // Set the default currency value
                 }}
-                onSubmit={({ familyName, nationalId, telephone }) => {
+                onSubmit={({
+                  familyName,
+                  nationalId,
+                  telephone,
+                  basicSalary,
+                  transportAllowance,
+                  livingAllowance,
+                }) => {
                   // Handle form submission here
+                  setLoading(true)
                   axios
                     .post('http://localhost:5000/api/v1/employee', {
                       firstName: name,
@@ -144,12 +146,34 @@ const EmployeesPage = () => {
                       telephone,
                     })
                     .then((response) => {
-                      toast('Employee added Successfully', {
-                        hideProgressBar: true,
-                        autoClose: 2000,
-                        type: 'success',
-                      })
-                      router.push('/employees/employees')
+                      axios
+                        .post('http://localhost:5000/api/v1/payroll', {
+                          employeeId: response.data._id,
+                          basicSalary:basicSalary,
+                          transportAllowance:transportAllowance,
+                          livingAllowance:livingAllowance,
+                          grossSalary: grossSalary,
+                          paye: paye,
+                          pension3EmployeeContribution: pension3EmployeeContribution,
+                          pension5EmployerContribution: pension5EmployerContribution,
+                          totalPensionPayable: totalPensionPayable,
+                          maternity03EmployeeContribution: maternity03EmployeeContribution,
+                          maternity03EmployerContribution: maternity03EmployerContribution,
+                          totalMaternityPayable: totalMaternityPayable,
+                          netSalaryBeforeCBHI: netSalaryBeforeCBHI,
+                          employee05CBHIContributions: employee05CBHIContributions,
+                          advances: advances,
+                          netPay: netPay,
+                        })
+                        .then((response) => {
+                          setLoading(false)
+                          toast('Employee added Successfully', {
+                            hideProgressBar: true,
+                            autoClose: 2000,
+                            type: 'success',
+                          })
+                          router.push('/employees/employees')
+                        })
                     })
                     .catch((error) => {
                       console.log(error)
@@ -299,7 +323,7 @@ const EmployeesPage = () => {
                         type="submit"
                         className="bg-indigo-500 text-white rounded-md px-4 py-2 hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600"
                       >
-                        New Employee
+                        {loading ? 'Saving....' : 'New Employee'}
                       </button>
                     </div>
                   </Form>

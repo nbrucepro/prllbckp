@@ -15,8 +15,8 @@ export const COLUMNS = [
     sticky: 'left'
   },
   {
-    Header: 'Last Name',
-    Footer: 'Last Name',
+    Header: 'Family Name',
+    Footer: 'Family Name',
     accessor: 'last_name',
     sticky: 'left'
   },
@@ -66,7 +66,7 @@ export const GROUPED_COLUMNS = [
         accessor: 'first_name'
       },
       {
-        Header: 'Last Name',
+        Header: 'Family Name',
         Footer: 'Last Name',
         accessor: 'last_name'
       }
