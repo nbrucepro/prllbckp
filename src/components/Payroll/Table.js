@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { State } from "../../context/stateContext";
 // git remote add origin git@github.com:
 export default function Table() {
-  const { name,grossSalary,netPay,paye } = useContext(State);
+  const { name,grossSalary,netPay,paye,basicSalary } = useContext(State);
   return (
     <>
       <table width="100%" className="mb-10">
@@ -28,7 +28,7 @@ export default function Table() {
 
       <div>
         <h2 className="flex items-end justify-end text-gray-800 text-4xl font-bold">
-          Frw. {netPay}
+          Frw. {netPay.toFixed(0)}
         </h2>
       </div>
     </>

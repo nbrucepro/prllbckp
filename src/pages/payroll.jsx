@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Box } from '@mui/material'
+import { DateRangePicker } from '@mui/lab';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid'
 import { tokens } from '../../theme'
 import Header from '../components/Header'
 import { useTheme } from '@mui/material'
 import LayoutAuthenticated from '../layouts/Authenticated'
 import Test from '../components/Payroll/test'
+import DateRangePickerComponent from '../components/shared/DateRangePickerComponent';
+import AntdRangePicker from '../components/shared/AntdRangePicker';
 import axios from 'axios'
 
 const Payroll = () => {
@@ -130,6 +133,21 @@ const Payroll = () => {
   ]
 
   const [active, setActive] = useState('logs')
+
+  //filtering rows by date
+  const [filteredRows, setFilteredRows] = useState(payrollData);
+  const handleDateRangeChange = (newDateRange) =>{
+    // Filter the rows based on the selected date range
+    const filteredData = payrollData.filter((row)=>{
+      const date = new Date(row.date);
+      return (
+        (!newDateRange[0]||date>=newDateRange[0])&&
+        (!newDateRange[1] || date <= newDateRange[1])
+      )
+
+    })
+    setFilteredRows(filteredData);
+  }
   return (
     <Box m="20px">
       <Header title="Payroll" />
@@ -185,7 +203,10 @@ const Payroll = () => {
             },
           }}
         >
+          {/* <div className='flex flex-col'>           */}
+          <AntdRangePicker/>
           <DataGrid rows={payrollData} columns={columns} components={{ Toolbar: GridToolbar }} />
+          {/* </div> */}
         </Box>
       ) : (
         <>{data.length !== 0 ? <Test MOCK_DATA={data} /> : <p>Loading...</p>}</>

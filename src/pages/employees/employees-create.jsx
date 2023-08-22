@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import {useState} from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/router'
 import React, { useContext, useEffect } from 'react'
 import LayoutAuthenticated from '../../layouts/Authenticated'
@@ -74,9 +74,9 @@ const EmployeesPage = () => {
     }
     let pensioncalc = grossSalary - transportAllowance
     //pension3%EmployeeContribution
-    pension3EmployeeContribution = (pensioncalc * 3) / 100
+    pension3EmployeeContribution = (pensioncalc * 3) / 100    
     //pension5%EmployerContribution
-    pension5EmployerContribution = (pensioncalc * 5) / 100
+    pension5EmployerContribution = (pensioncalc * 5) / 100    
     //maternity0.3%EmployeeContribution
     maternity03EmployeeContribution = (pensioncalc * 0.3) / 100
     //maternity0.3%EmployerContribution
@@ -90,10 +90,11 @@ const EmployeesPage = () => {
       grossSalary - (paye + pension3EmployeeContribution + maternity03EmployeeContribution)
     //Employee0.5%CBHIContributions
     employee05CBHIContributions = (netSalaryBeforeCBHI * 0.5) / 100
-    //salaryAfterCBHI = netSalaryBeforeCBHI - employee05CBHIContributions
+    const salaryAfterCBHI = netSalaryBeforeCBHI - employee05CBHIContributions
 
     //netPay = salaryAfterCBHI-(advances + employee05CBHIContributions)
-    netPay = pensioncalc - (advances + employee05CBHIContributions)
+    console.log(salaryAfterCBHI)
+    netPay = salaryAfterCBHI - (advances)    
 
     setPaye(paye)
     setPension3EmployeeContribution(pension3EmployeeContribution)
@@ -124,12 +125,8 @@ const EmployeesPage = () => {
                   familyName: '',
                   nationalId: '',
                   telephone: '',
-                   }}
-                onSubmit={({
-                  familyName,
-                  nationalId,
-                  telephone,
-                }) => {
+                }}
+                onSubmit={({ familyName, nationalId, telephone }) => {
                   // Handle form submission here
                   setLoading(true)
                   axios
@@ -143,9 +140,9 @@ const EmployeesPage = () => {
                       axios
                         .post('http://localhost:5000/api/v1/payroll', {
                           employeeId: response.data._id,
-                          basicSalary:basicSalary,
-                          transportAllowance:transportAllowance,
-                          livingAllowance:livingAllowance,
+                          basicSalary: basicSalary,
+                          transportAllowance: transportAllowance,
+                          livingAllowance: livingAllowance,
                           grossSalary: grossSalary,
                           paye: paye,
                           pension3EmployeeContribution: pension3EmployeeContribution,
