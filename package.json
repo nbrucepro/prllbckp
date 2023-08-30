@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3333",
     "build": "next build",
     "export": "next export",
     "start": "next start",
@@ -14,8 +14,9 @@
     "@mdi/js": "^7.0.96",
     "@mui/icons-material": "^5.10.3",
     "@mui/lab": "^5.0.0-alpha.140",
-    "@mui/material": "^5.10.5", 
+    "@mui/material": "^5.10.5",
     "@mui/x-data-grid": "^5.17.2",
+    "@mui/x-data-grid-premium": "^6.11.2",
     "@reduxjs/toolkit": "^1.9.5",
     "@syncfusion/ej2-react-grids": "^22.2.8",
     "antd": "^5.8.4",
@@ -24,6 +25,7 @@
     "collect.js": "^4.36.1",
     "formik": "^2.4.2",
     "framer-motion": "^10.15.0",
+    "goal-seek": "^0.1.4",
     "material-table": "^2.0.5",
     "moment": "^2.29.4",
     "next": "^13.4.7",

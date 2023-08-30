@@ -1,11 +1,15 @@
 import React, { useState } from 'react'
 import { DatePicker, Radio, Space } from 'antd'
 const { RangePicker } = DatePicker
-const AntdRangePicker = () => {
-  const [size, setSize] = useState('middle')
+const AntdRangePicker = ({onDateRangeChange}) => {
+  const [size, setSize] = useState('middle');
+  const [dateRange, setDateRange] = useState([null, null]);
+
   const handleDateChange = (e) => {
-    console.log(new Date(e[0].$d).getMonth())
-    console.log(new Date(e[1].$d).getMonth())
+    setDateRange(e);
+    if (onDateRangeChange) {
+      onDateRangeChange(e);
+    }
   }
   return (
     <Space direction="vertical" size={12} className="inline">

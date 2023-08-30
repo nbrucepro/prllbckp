@@ -14,6 +14,8 @@ import axios from 'axios'
 const Payroll = () => {
   const [data, setData] = useState([])
   const [payrollData, setPayrollData] = useState([])
+  
+  const [filteredRows, setFilteredRows] = useState([]);
   useEffect(() => {
     axios
       .get('http://localhost:5000/api/v1/payroll')
@@ -26,6 +28,7 @@ const Payroll = () => {
         }))
 
         setPayrollData(payrollWithIds)
+        setFilteredRows(payrollWithIds)
         console.log(payrollWithIds)
       })
       .catch((error) => {
@@ -38,7 +41,13 @@ const Payroll = () => {
     allPayrolls()
   }, [])
   const allPayrolls = () => {}
-
+  function CustomToolbar() {
+    return (
+      <GridToolbarContainer>
+        <GridToolbarExport />
+      </GridToolbarContainer>
+    );
+  }
   const theme = useTheme()
   const colors = tokens(theme.palette.mode)
   const columns = [
@@ -135,19 +144,24 @@ const Payroll = () => {
   const [active, setActive] = useState('logs')
 
   //filtering rows by date
-  const [filteredRows, setFilteredRows] = useState(payrollData);
+
   const handleDateRangeChange = (newDateRange) =>{
     // Filter the rows based on the selected date range
     const filteredData = payrollData.filter((row)=>{
-      const date = new Date(row.date);
-      return (
-        (!newDateRange[0]||date>=newDateRange[0])&&
-        (!newDateRange[1] || date <= newDateRange[1])
-      )
-
-    })
-    setFilteredRows(filteredData);
-  }
+     const date = new Date(row?.employeeId?.createdAt);
+     console.log(newDateRange)
+     if(newDateRange !== null){
+       return (
+         (date>=newDateRange[0])&&
+         (date <= newDateRange[1])
+         )         
+        }
+      });
+      // if(newDateRange !== null){}
+      // if(filteredData){
+        setFilteredRows(filteredData);
+      // }
+    }
   return (
     <Box m="20px">
       <Header title="Payroll" />
@@ -204,8 +218,15 @@ const Payroll = () => {
           }}
         >
           {/* <div className='flex flex-col'>           */}
-          <AntdRangePicker/>
-          <DataGrid rows={payrollData} columns={columns} components={{ Toolbar: GridToolbar }} />
+          <AntdRangePicker onDateRangeChange={handleDateRangeChange}/>
+          <DataGrid rows={filteredRows} columns={columns} components={{ Toolbar: GridToolbar }} />
+          {/* <DataGridPremium
+        rows={filteredRows}
+        columns={columns}
+        slots={{
+          toolbar: CustomToolbar,
+        }}
+      /> */}
           {/* </div> */}
         </Box>
       ) : (

@@ -14,6 +14,8 @@ import { ErrorMessage, Field, Form, Formik } from 'formik'
 import { State } from '../../context/stateContext'
 import { Box } from '@mui/material'
 import Header from '../../components/Header'
+import goalSeek from 'goal-seek'
+// import OneEmployee from '../../components/employee/OneEmployee';
 import axios from 'axios'
 
 import { toast } from 'react-toastify'
@@ -56,6 +58,10 @@ const EmployeesPage = () => {
     netPay,
   } = useContext(State)
   const [loading, setLoading] = useState(false)
+  const [oneEmployee, setOneEmployee] = useState(true)
+  const [netPay1, setnetPay1] = useState(0)
+  const [isGenerated, setIsGenerated] = useState(false)
+  const [generating, setGenerating] = useState()
   const handledate = (date) => {
     const rwandaDateArray = date.split('-')
     const rwandaDate = []
@@ -74,9 +80,9 @@ const EmployeesPage = () => {
     }
     let pensioncalc = grossSalary - transportAllowance
     //pension3%EmployeeContribution
-    pension3EmployeeContribution = (pensioncalc * 3) / 100    
+    pension3EmployeeContribution = (pensioncalc * 3) / 100
     //pension5%EmployerContribution
-    pension5EmployerContribution = (pensioncalc * 5) / 100    
+    pension5EmployerContribution = (pensioncalc * 5) / 100
     //maternity0.3%EmployeeContribution
     maternity03EmployeeContribution = (pensioncalc * 0.3) / 100
     //maternity0.3%EmployerContribution
@@ -94,7 +100,7 @@ const EmployeesPage = () => {
 
     //netPay = salaryAfterCBHI-(advances + employee05CBHIContributions)
     console.log(salaryAfterCBHI)
-    netPay = salaryAfterCBHI - (advances)    
+    netPay = salaryAfterCBHI - advances
 
     setPaye(paye)
     setPension3EmployeeContribution(pension3EmployeeContribution)
@@ -106,7 +112,64 @@ const EmployeesPage = () => {
     setNetSalaryBeforeCBHI(netSalaryBeforeCBHI)
     setEmployee05CBHIContributions(employee05CBHIContributions)
     setNetPay(netPay)
-  }, [grossSalary, transportAllowance, livingAllowance])
+
+    // setBasicSalary(basicSalary1);x x
+  }, [grossSalary, transportAllowance, livingAllowance, basicSalary])
+  const [isPayeonly, setIsPayeonly] = useState(0)
+  useEffect(() => {
+    let paye01 = 0
+    console.log("Initial paye-",paye01);
+    if (generating == 1) {
+      let xi = netPay1;
+      const fn = (basicSalary1) => {
+        const grossSalary = basicSalary1 + livingAllowance + transportAllowance
+        const pensioncalc = basicSalary1 + transportAllowance
+        if (grossSalary <= 60000) {
+          paye01 = 0
+        } else if (grossSalary > 60000 && grossSalary <= 100000) {
+          paye01 = ((grossSalary - 60000) * 20) / 100
+        } else if (grossSalary > 100000) {
+          paye01 = ((grossSalary - 100000) * 30) / 100 + ((100000 - 60000) * 20) / 100
+        }
+        
+        const advances = 0
+        const pension3EmployeeContribution = (pensioncalc * 3) / 100
+        const pension5EmployerContribution = (pensioncalc * 5) / 100
+        const maternity03EmployeeContribution = (pensioncalc * 0.3) / 100
+        const maternity03EmployerContribution = (pensioncalc * 0.3) / 100
+        const totalPensionPayable = pension3EmployeeContribution + pension5EmployerContribution
+        //totalMaternityPayable
+        const totalMaternityPayable =
+          maternity03EmployeeContribution + maternity03EmployerContribution
+        //netSalaryBeforeCBHI =
+        const netSalaryBeforeCBHI =
+          grossSalary - (paye01 + pension3EmployeeContribution + maternity03EmployeeContribution)
+        //Employee0.5%CBHIContributions
+        const employee05CBHIContributions = (netSalaryBeforeCBHI * 0.5) / 100
+        const salaryAfterCBHI = netSalaryBeforeCBHI - employee05CBHIContributions
+
+        //netPay = salaryAfterCBHI10-(advances10 + employee05CBHIContributions)
+        const netPay = salaryAfterCBHI - advances
+        console.log('BasicSalary-', basicSalary1)
+        return netPay
+      }
+      const fnParams = [xi]
+
+      try {
+        const result = goalSeek({
+          fn,
+          fnParams,
+          percentTolerance: 0.1,
+          maxIterations: 10,
+          maxStep: 10000,
+          goal: netPay1,
+          independentVariableIdx: 0,
+        })
+      } catch (e) {}
+    }
+    setGenerating()
+  }, [generating])
+
   return (
     <>
       <Head>
@@ -125,6 +188,7 @@ const EmployeesPage = () => {
                   familyName: '',
                   nationalId: '',
                   telephone: '',
+                  picked: 'Two',
                 }}
                 onSubmit={({ familyName, nationalId, telephone }) => {
                   // Handle form submission here
@@ -171,7 +235,7 @@ const EmployeesPage = () => {
                     })
                 }}
               >
-                {() => (
+                {({ values }) => (
                   <Form>
                     <div className="grid md:grid-cols-2 gap-6 grid-cols-1 sm:py-8 sm:px-10 py-1 px-1">
                       <div>
@@ -241,24 +305,71 @@ const EmployeesPage = () => {
                     </div>
                     <div className="py-8">
                       <h1 className="text-lg font-semibold">Payroll Details</h1>
-                      <div className="grid md:grid-cols-2 gap-6 grid-cols-1 sm:py-8 sm:px-10 py-1 px-1">
-                        <div>
-                          <label
-                            htmlFor="basicSalary"
-                            className="sm:w-full w-full block text-sm font-medium text-gray-700 mb-2"
-                          >
-                            Basic salary
-                          </label>{' '}
+                      <div id="my-radio-group" className="m-2">
+                        Do you know Basic Salary?
+                      </div>
+                      <div
+                        role="group"
+                        aria-labelledby="my-radio-group"
+                        className="flex justify-left"
+                      >
+                        <label>
                           <Field
-                            id="basicSalary"
-                            type="number"
-                            step="0.01"
-                            name="basicSalary"
-                            className="sm:w-full w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
-                            value={basicSalary}
-                            onChange={(e) => setBasicSalary(e.target.value)}
+                            type="radio"
+                            name="picked"
+                            value="One"
+                            className="ml-4 cursor-pointer"
                           />
-                        </div>
+                          Yes
+                        </label>
+                        <label>
+                          <Field
+                            type="radio"
+                            name="picked"
+                            value="Two"
+                            className="ml-4 cursor-pointer"
+                          />
+                          No
+                        </label>
+                      </div>
+                      <div className="grid md:grid-cols-2 gap-6 grid-cols-1 sm:py-8 sm:px-10 py-1 px-1">
+                        {values.picked == 'Two' ? (
+                          <div>
+                            <label
+                              htmlFor="netPay1"
+                              className="sm:w-full w-full block text-sm font-medium text-gray-700 mb-2"
+                            >
+                              Net Pay
+                            </label>{' '}
+                            <Field
+                              id="netPay1"
+                              type="number"
+                              step="0.01"
+                              name="netPay1"
+                              className="sm:w-full w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
+                              value={netPay1}
+                              onChange={(e) => setnetPay1(e.target.value)}
+                            />
+                          </div>
+                        ) : (
+                          <div>
+                            <label
+                              htmlFor="basicSalary"
+                              className="sm:w-full w-full block text-sm font-medium text-gray-700 mb-2"
+                            >
+                              Basic salary
+                            </label>{' '}
+                            <Field
+                              id="basicSalary"
+                              type="number"
+                              step="0.01"
+                              name="basicSalary"
+                              className="sm:w-full w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-indigo-500"
+                              value={basicSalary}
+                              onChange={(e) => setBasicSalary(e.target.value)}
+                            />
+                          </div>
+                        )}
                         <div>
                           <label
                             htmlFor="transportAllowance"
@@ -309,14 +420,43 @@ const EmployeesPage = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="flex justify-center mt-4">
-                      <button
-                        type="submit"
-                        className="bg-indigo-500 text-white rounded-md px-4 py-2 hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600"
-                      >
-                        {loading ? 'Saving....' : 'New Employee'}
-                      </button>
-                    </div>
+                    {values.picked == 'Two' ? (
+                      <div className="flex justify-center mt-4">
+                        {isGenerated ? (
+                          <button
+                            type="submit"
+                            className="bg-indigo-500 text-white rounded-md px-4 py-2 hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600"
+                          >
+                            {loading ? 'Saving....' : 'New Employee'}
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            disabled={netPay1 < 1}
+                            onClick={() => {
+                              setGenerating(1)
+                              setTimeout(() => {
+                                toast('Basic Salary Generated Successfully!')
+                                setIsGenerated(true)
+                                setGenerating()
+                              }, [2000])
+                            }}
+                            className="bg-indigo-500 text-white rounded-md px-4 py-2 focus:outline-none focus:bg-indigo-600"
+                          >
+                            {generating == 1 ? 'Generating....' : 'Generate Basic Salary'}
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex justify-center mt-4">
+                        <button
+                          type="submit"
+                          className="bg-indigo-500 text-white rounded-md px-4 py-2 hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600"
+                        >
+                          {loading ? 'Saving....' : 'New Employee'}
+                        </button>
+                      </div>
+                    )}
                   </Form>
                 )}
               </Formik>
@@ -345,6 +485,9 @@ const EmployeesPage = () => {
             </div>
           </div>
         </div>
+        {/* {oneEmployee && (          
+            <OneEmployee/>
+        )} */}
       </Box>
     </>
   )

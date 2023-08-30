@@ -28,16 +28,16 @@ const menuAside: MenuAsideItem[] = [
   {
     label: 'Employees',
     icon: mdiTable,
-    menu:[
-      {
-      href:'/employees/employees-create',
-      label:'New Employee'
-    },
-      {
-      href:'/employees/employees',
-      label:'All Employees'
-    }
-  ]
+    href:'/employees/employees-create',
+  //   menu:[
+  //     {
+  //     label:'New Employee'
+  //   },
+  //     {
+  //     href:'/employees/employees',
+  //     label:'All Employees'
+  //   }
+  // ]
   },
   {
     href:'/payroll',
