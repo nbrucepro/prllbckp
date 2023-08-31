@@ -188,13 +188,14 @@ const EmployeesPage = () => {
                   familyName: '',
                   nationalId: '',
                   telephone: '',
-                  picked: 'Two',
+                  picked: 'One',
                 }}
                 onSubmit={({ familyName, nationalId, telephone }) => {
                   // Handle form submission here
                   setLoading(true)
                   axios
-                    .post('http://localhost:5000/api/v1/employee', {
+                    // .post('http://localhost:5000/api/v1/employee', {
+                    .post('https://acr-payroll.onrender.com/api/v1/employee', {
                       firstName: name,
                       familyName,
                       nationalId,
@@ -202,7 +203,8 @@ const EmployeesPage = () => {
                     })
                     .then((response) => {
                       axios
-                        .post('http://localhost:5000/api/v1/payroll', {
+                        // .post('http://localhost:5000/api/v1/payroll', {
+                        .post('https://acr-payroll.onrender.com/api/v1/payroll', {
                           employeeId: response.data._id,
                           basicSalary: basicSalary,
                           transportAllowance: transportAllowance,
@@ -436,9 +438,9 @@ const EmployeesPage = () => {
                             onClick={() => {
                               setGenerating(1)
                               setTimeout(() => {
-                                toast('Basic Salary Generated Successfully!')
-                                setIsGenerated(true)
-                                setGenerating()
+                                toast('Feature Under development!')
+                                // setIsGenerated(true)
+                                // setGenerating()
                               }, [2000])
                             }}
                             className="bg-indigo-500 text-white rounded-md px-4 py-2 focus:outline-none focus:bg-indigo-600"

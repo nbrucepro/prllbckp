@@ -42,7 +42,7 @@ const menuNavBar: MenuNavBarItem[] = [
       {
         icon: mdiAccount,
         label: 'My Profile',
-        href: '/profile',
+        href: '#',
       },
       {
         icon: mdiCogOutline,

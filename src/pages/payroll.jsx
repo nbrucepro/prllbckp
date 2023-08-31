@@ -1,24 +1,25 @@
 import { useEffect, useState } from 'react'
 import { Box } from '@mui/material'
-import { DateRangePicker } from '@mui/lab';
+import { DateRangePicker } from '@mui/lab'
 import { DataGrid, GridToolbar } from '@mui/x-data-grid'
 import { tokens } from '../../theme'
 import Header from '../components/Header'
 import { useTheme } from '@mui/material'
 import LayoutAuthenticated from '../layouts/Authenticated'
 import Test from '../components/Payroll/test'
-import DateRangePickerComponent from '../components/shared/DateRangePickerComponent';
-import AntdRangePicker from '../components/shared/AntdRangePicker';
+import DateRangePickerComponent from '../components/shared/DateRangePickerComponent'
+import AntdRangePicker from '../components/shared/AntdRangePicker'
 import axios from 'axios'
 
 const Payroll = () => {
   const [data, setData] = useState([])
   const [payrollData, setPayrollData] = useState([])
-  
-  const [filteredRows, setFilteredRows] = useState([]);
+
+  const [filteredRows, setFilteredRows] = useState([])
   useEffect(() => {
     axios
-      .get('http://localhost:5000/api/v1/payroll')
+      .get('https://acr-payroll.onrender.com/api/v1/payroll')
+      // .get('http://localhost:5000/api/v1/payroll')
       .then((response) => {
         const payrollWithIds = response.data.payrolls.map((payroll, index) => ({
           ...payroll,
@@ -35,7 +36,8 @@ const Payroll = () => {
         console.log(error)
       })
 
-    axios.get('http://localhost:5000/api/v1/employee').then((response) => {
+    // axios.get('http://localhost:5000/api/v1/employee').then((response) => {
+    axios.get('https://acr-payroll.onrender.com/api/v1/employee').then((response) => {
       setData(response.data.employees)
     })
     allPayrolls()
@@ -46,7 +48,7 @@ const Payroll = () => {
       <GridToolbarContainer>
         <GridToolbarExport />
       </GridToolbarContainer>
-    );
+    )
   }
   const theme = useTheme()
   const colors = tokens(theme.palette.mode)
@@ -145,23 +147,20 @@ const Payroll = () => {
 
   //filtering rows by date
 
-  const handleDateRangeChange = (newDateRange) =>{
+  const handleDateRangeChange = (newDateRange) => {
     // Filter the rows based on the selected date range
-    const filteredData = payrollData.filter((row)=>{
-     const date = new Date(row?.employeeId?.createdAt);
-     console.log(newDateRange)
-     if(newDateRange !== null){
-       return (
-         (date>=newDateRange[0])&&
-         (date <= newDateRange[1])
-         )         
-        }
-      });
-      // if(newDateRange !== null){}
-      // if(filteredData){
-        setFilteredRows(filteredData);
-      // }
-    }
+    const filteredData = payrollData.filter((row) => {
+      const date = new Date(row?.employeeId?.createdAt)
+      console.log(newDateRange)
+      if (newDateRange !== null) {
+        return date >= newDateRange[0] && date <= newDateRange[1]
+      }
+    })
+    // if(newDateRange !== null){}
+    // if(filteredData){
+    setFilteredRows(filteredData)
+    // }
+  }
   return (
     <Box m="20px">
       <Header title="Payroll" />
@@ -218,7 +217,7 @@ const Payroll = () => {
           }}
         >
           {/* <div className='flex flex-col'>           */}
-          <AntdRangePicker onDateRangeChange={handleDateRangeChange}/>
+          <AntdRangePicker onDateRangeChange={handleDateRangeChange} />
           <DataGrid rows={filteredRows} columns={columns} components={{ Toolbar: GridToolbar }} />
           {/* <DataGridPremium
         rows={filteredRows}

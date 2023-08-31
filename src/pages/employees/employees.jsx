@@ -10,7 +10,8 @@ import { getPageTitle } from '../../config'
 const Employees = () => {
   const [data, setData] = useState([])
   useEffect(() => {
-    axios.get('http://localhost:5000/api/v1/employee').then((response) => {
+    // axios.get('http://localhost:5000/api/v1/employee').then((response) => {
+    axios.get('https://acr-payroll.onrender.com/api/v1/employee').then((response) => {
       console.log(response.data.employees)
       setData(response.data.employees)
     })

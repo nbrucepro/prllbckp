@@ -24,8 +24,8 @@ export default function LayoutAuthenticated({ children }: Props) {
   useEffect(() => {
     dispatch(
       setUser({
-        name: 'Bruce',
-        email: 'bruce@example.com',
+        name: 'Accountant',
+        email: 'name@example.com',
         avatar:
           'https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93',
       })

@@ -26,7 +26,7 @@ const Dashboard = () => {
         <title>{getPageTitle('Dashboard')}</title>
       </Head>
       <SectionMain>
-        <SectionTitleLineWithButton icon={mdiChartTimelineVariant} title="Overview" main>  
+        <SectionTitleLineWithButton icon={mdiChartTimelineVariant} title="Dashboard" main>  
         </SectionTitleLineWithButton>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 mb-6">
@@ -36,8 +36,8 @@ const Dashboard = () => {
             trendColor="success"
             icon={mdiAccountMultiple}
             iconColor="success"
-            number={512}
-            label="Clients"
+            number={22}
+            label="Employees"
           />
           <CardBoxWidget
             trendLabel="16%"
@@ -45,9 +45,9 @@ const Dashboard = () => {
             trendColor="danger"
             icon={mdiCartOutline}
             iconColor="info"
-            number={7770}
+            number={400}
             numberPrefix="$"
-            label="Sales"
+            label="Average Salary"
           />
           <CardBoxWidget
             trendLabel="Overflow"
@@ -55,25 +55,11 @@ const Dashboard = () => {
             trendColor="warning"
             icon={mdiChartTimelineVariant}
             iconColor="danger"
-            number={256}
+            number={97}
             numberSuffix="%"
             label="Performance"
           />
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <div className="flex flex-col justify-between">
-            {transactions.map((transaction) => (
-              <CardBoxTransaction key={transaction.id} transaction={transaction} />
-            ))}
-          </div>
-          <div className="flex flex-col justify-between">
-            {clientsListed.map((client) => (
-              <CardBoxClient key={client.id} client={client} />
-            ))}
-          </div>
-        </div>
-        <SectionTitleLineWithButton icon={mdiAccountMultiple} title="Clients" />
       </SectionMain>
     </>
   )

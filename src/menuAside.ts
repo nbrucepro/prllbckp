@@ -21,11 +21,6 @@ const menuAside: MenuAsideItem[] = [
     label: 'Dashboard',
   },
   {
-    href:'/invoic',
-    icon:mdiAccountCircle,
-    label:'Invoice'
-  },
-  {
     label: 'Employees',
     icon: mdiTable,
     href:'/employees/employees-create',
@@ -43,25 +38,7 @@ const menuAside: MenuAsideItem[] = [
     href:'/payroll',
     label: 'Payroll',
     icon: mdiViewList,
-  },
-   {
-    // href: '/dashboard',
-    label: 'Profile',
-    icon: mdiAccountCircle,
-    menu: [
-      {
-        label: 'Edit',
-      },
-      {
-        label: 'Settings',
-      },
-    ]
-  },
-  // {
-  //   href: '/login',
-  //   label: 'Login',
-  //   icon: mdiLock,
-  // },
+  },   
 ]
 
 export default menuAside

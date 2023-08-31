@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { State } from "../../context/stateContext";
 // git remote add origin git@github.com:
 export default function Table() {
